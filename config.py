@@ -1,0 +1,1 @@
+repo = 'jcplus/stable-diffusion-v1-5'

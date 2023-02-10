@@ -1,6 +1,7 @@
 import torch
 from torch import autocast
 from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from config import repo
 import base64
 from io import BytesIO
 import os
@@ -8,7 +9,6 @@ import os
 def init():
     global model
     HF_AUTH_TOKEN = os.getenv("HF_AUTH_TOKEN")
-    repo = 'runwayml/stable-diffusion-v1-5'
     scheduler = DPMSolverMultistepScheduler.from_pretrained(repo, subfolder="scheduler")
     model = DiffusionPipeline.from_pretrained(repo, torch_dtype=torch.float16, revision="fp16", scheduler=scheduler, use_auth_token=HF_AUTH_TOKEN, safety_checker=None).to("cuda")    
 
