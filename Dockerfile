@@ -14,6 +14,7 @@ EXPOSE 8000
 
 ARG HF_AUTH_TOKEN
 
+ADD config.py .
 ADD download.py .
 RUN python3 download.py
 
