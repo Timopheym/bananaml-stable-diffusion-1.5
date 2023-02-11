@@ -4,11 +4,9 @@ from diffusers import StableDiffusionPipeline, DDIMScheduler
 from config import filename
 import base64
 from io import BytesIO
-import os
 
 def init():
     global model
-    HF_AUTH_TOKEN = os.getenv("HF_AUTH_TOKEN")
     # scheduler = DPMSolverMultistepScheduler.from_pretrained(filename, subfolder="scheduler")
     model_path = filename.split('.')[0]
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False,
