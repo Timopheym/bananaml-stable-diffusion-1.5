@@ -2,7 +2,7 @@ import os
 import torch
 import urllib.request
 from config import model_url, filename
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, DDIMScheduler
 import tarfile
 
 
@@ -18,18 +18,11 @@ def download_model():
 
     urllib.request.urlretrieve(model_url, filename)
     untar(filename)
-    folder_name = filename.split('.')[0]
-
-
-    # scheduler = DPMSolverMultistepScheduler.from_pretrained(filename, subfolder="scheduler")
+    model_path = filename.split('.')[0]
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False,
                               set_alpha_to_one=False)
-    model = DiffusionPipeline.from_pretrained(folder_name,
-                                              torch_dtype=torch.float16,
-                                              revision="fp16",
-                                              scheduler=scheduler,
-                                              use_auth_token=HF_AUTH_TOKEN,
-                                              safety_checker=None)
+    pipe = StableDiffusionPipeline.from_pretrained(model_path, scheduler=scheduler, safety_checker=None,
+                                                   torch_dtype=torch.float16).to("cuda")
     
 if __name__ == "__main__":
     download_model()

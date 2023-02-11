@@ -1,6 +1,6 @@
 import torch
 from torch import autocast
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, DDIMScheduler
 from config import filename
 import base64
 from io import BytesIO
@@ -10,11 +10,12 @@ def init():
     global model
     HF_AUTH_TOKEN = os.getenv("HF_AUTH_TOKEN")
     # scheduler = DPMSolverMultistepScheduler.from_pretrained(filename, subfolder="scheduler")
+    model_path = filename.split('.')[0]
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False,
                               set_alpha_to_one=False)
+    model = StableDiffusionPipeline.from_pretrained(model_path, scheduler=scheduler, safety_checker=None,
+                                                   torch_dtype=torch.float16).to("cuda")
 
-    folder_name = filename.split('.')[0]
-    model = DiffusionPipeline.from_pretrained(folder_name, torch_dtype=torch.float16, revision="fp16", scheduler=scheduler, use_auth_token=HF_AUTH_TOKEN, safety_checker=None).to("cuda")
 
 def inference(model_inputs:dict):
     global model
