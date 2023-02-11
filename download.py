@@ -31,7 +31,7 @@ def copy_files(src, dst):
 def download_model():
     # Download model
     scheduler_for_initial_download = DPMSolverMultistepScheduler.from_pretrained(repo, subfolder="scheduler")
-    model_for_initial_download = DiffusionPipeline.from_pretrained(repo, torch_dtype=torch.float16, revision="fp16",
+    model_for_initial_download = DiffusionPipeline.from_pretrained(repo, torch_dtype=torch.float16,
                                                                    scheduler=scheduler_for_initial_download,
                                                                    use_auth_token=HF_AUTH_TOKEN, safety_checker=None)
     # Create model folder
