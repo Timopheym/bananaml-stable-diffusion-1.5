@@ -13,6 +13,7 @@ ADD server.py .
 EXPOSE 8000
 
 ARG HF_AUTH_TOKEN
+ARG MODEL_NAME
 
 ADD config.py .
 ADD download.py .

@@ -5,12 +5,16 @@ from config import base_path
 
 import base64
 from io import BytesIO
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 def init():
     global model
     # scheduler = DPMSolverMultistepScheduler.from_pretrained(filename, subfolder="scheduler")
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False,
                               set_alpha_to_one=False)
+    logger.info(f"Loading model from {base_path}")
     model = StableDiffusionPipeline.from_pretrained(base_path, scheduler=scheduler, safety_checker=None,
                                                    torch_dtype=torch.float16).to("cuda")
 
@@ -25,8 +29,10 @@ def inference(model_inputs:dict):
     guidance_scale = model_inputs.get('guidance_scale', 9)
     seed = model_inputs.get('seed', None)
 
+    logger.info(f"Received prompt: {prompt}")
+
     if not prompt: return {'message': 'No prompt was provided'}
-    
+
     generator = None
     if seed: generator = torch.Generator("cuda").manual_seed(seed)
     
