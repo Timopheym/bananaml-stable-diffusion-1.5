@@ -55,7 +55,9 @@ def download_model(model_name):
 
 
 if __name__ == "__main__":
+    logger.warning("Downloading upscaling model")
     StableDiffusionLatentUpscalePipeline.from_pretrained("stabilityai/sd-x2-latent-upscaler", torch_dtype=torch.float16)
+    logger.warning("Downloading sd models")
     for model_name in all_model_names:
         download_model(model_name)
 
