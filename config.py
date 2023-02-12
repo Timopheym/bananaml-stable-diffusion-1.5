@@ -5,7 +5,12 @@ MODEL_NAME = os.getenv("MODEL_NAME")
 repo = 'runwayml/stable-diffusion-v1-5'
 
 base_path = './base_model'
-all_model_names = ['93612', '93640', '93715', '93744']
+all_model_names = [
+    # '93612',
+    # '93640',
+    '93715',
+    # '93744'
+]
 
 
 def get_model_url(model_name):
