@@ -1,4 +1,7 @@
 sanic==22.6.2
 torch
-diffusers[torch]
+git+https://github.com/huggingface/diffusers.git
 git+https://github.com/huggingface/transformers.git
+accelerate
+scipy
+safetensors

@@ -2,7 +2,7 @@ import os
 import torch
 import urllib.request
 from config import HF_AUTH_TOKEN, base_path, repo, get_model_url, get_filename, get_model_path, all_model_names
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler, StableDiffusionLatentUpscalePipeline
 import shutil
 import tarfile
 from logging import getLogger
@@ -55,5 +55,8 @@ def download_model(model_name):
 
 
 if __name__ == "__main__":
+    StableDiffusionLatentUpscalePipeline.from_pretrained("stabilityai/sd-x2-latent-upscaler", torch_dtype=torch.float16)
     for model_name in all_model_names:
         download_model(model_name)
+
+

@@ -1,6 +1,6 @@
 import torch
 from torch import autocast
-from diffusers import StableDiffusionPipeline, DDIMScheduler
+from diffusers import StableDiffusionPipeline, DDIMScheduler, StableDiffusionLatentUpscalePipeline
 from config import base_path, all_model_names
 
 import base64
@@ -12,6 +12,12 @@ logger = getLogger(__name__)
 
 def init():
     global models
+    global upscaler
+
+    upscaler = StableDiffusionLatentUpscalePipeline.from_pretrained("stabilityai/sd-x2-latent-upscaler",
+                                                                    torch_dtype=torch.float16)
+    upscaler.to("cuda")
+
     for model_name in all_model_names:
         scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False,
                                   set_alpha_to_one=False)
@@ -45,11 +51,19 @@ def inference(model_inputs: dict):
     if seed: generator = torch.Generator("cuda").manual_seed(seed)
 
     with autocast("cuda"):
-        image = model(prompt, guidance_scale=guidance_scale, height=height, width=width, num_inference_steps=steps,
-                      generator=generator).images[0]
+        low_res_latents = model(prompt, guidance_scale=guidance_scale, height=height, width=width, num_inference_steps=steps,
+                      generator=generator).images
+
+    upscaled_image = upscaler(
+        prompt=prompt,
+        image=low_res_latents,
+        num_inference_steps=20,
+        guidance_scale=0,
+        generator=generator,
+    ).images[0]
 
     buffered = BytesIO()
-    image.save(buffered, format="JPEG")
+    upscaled_image.save(buffered, format="JPEG")
     image_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
     return {'image_base64': image_base64}
