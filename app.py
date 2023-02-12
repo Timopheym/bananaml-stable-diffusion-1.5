@@ -51,19 +51,24 @@ def inference(model_inputs: dict):
     if seed: generator = torch.Generator("cuda").manual_seed(seed)
 
     with autocast("cuda"):
-        low_res_latents = model(prompt, guidance_scale=guidance_scale, height=height, width=width, num_inference_steps=steps,
-                      generator=generator).images
+        low_res_latents = model(prompt, guidance_scale=guidance_scale, height=height, width=width,
+                                num_inference_steps=steps,
+                                generator=generator).images
 
-    upscaled_image = upscaler(
+    upscaled_images = upscaler(
         prompt=prompt,
         image=low_res_latents,
         num_inference_steps=20,
         guidance_scale=0,
         generator=generator,
-    ).images[0]
+    ).images
 
-    buffered = BytesIO()
-    upscaled_image.save(buffered, format="JPEG")
-    image_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    images_base64 = []
 
-    return {'image_base64': image_base64}
+    for upscaled_image in upscaled_images:
+        buffered = BytesIO()
+        upscaled_image.save(buffered, format="JPEG")
+        image_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        images_base64.append(image_base64)
+
+    return {'images_base64': images_base64}
