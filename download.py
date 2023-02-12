@@ -33,21 +33,21 @@ def copy_files(src, dst):
 
 def download_model():
     # Download model
-    logger.info(f"Downloading model from {repo}")
+    logger.warning(f"Downloading model from {repo}")
     scheduler_for_initial_download = DPMSolverMultistepScheduler.from_pretrained(repo, subfolder="scheduler")
     model_for_initial_download = DiffusionPipeline.from_pretrained(repo, torch_dtype=torch.float16,
                                                                    scheduler=scheduler_for_initial_download,
                                                                    use_auth_token=HF_AUTH_TOKEN, safety_checker=None)
     # Create model folder
-    logger.info(f"Creating model folder {base_path}")
+    logger.warning(f"Creating model folder {base_path}")
     model_for_initial_download.save_pretrained(base_path)
     # Download pretrained model
-    logger.info(f"Downloading pretrained model from {model_url}")
+    logger.warning(f"Downloading pretrained model from {model_url}")
     urllib.request.urlretrieve(model_url, filename)
-    logger.info(f"Unzipping model {filename}")
+    logger.warning(f"Unzipping model {filename}")
     untar(filename)
 
-    logger.info(f"Copying files from {model_path} to {base_path}")
+    logger.warning(f"Copying files from {model_path} to {base_path}")
     copy_files(model_path, base_path)
 
 
