@@ -6,16 +6,18 @@ user_src.init()
 
 server = Sanic("my_app")
 
+
 @server.route('/healthcheck', methods=["GET"])
 def healthcheck(request):
     gpu = False
     out = subprocess.run("nvidia-smi", shell=True)
-    if out.returncode == 0: # success state on shell command
+    if out.returncode == 0:  # success state on shell command
         gpu = True
 
     return response.json({"state": "healthy", "gpu": gpu})
 
-@server.route('/', methods=["POST"]) 
+
+@server.route('/', methods=["POST"])
 def inference(request):
     try:
         model_inputs = response.json.loads(request.json)

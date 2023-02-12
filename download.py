@@ -1,8 +1,8 @@
 import os
 import torch
 import urllib.request
-from config import model_url, filename, model_path, HF_AUTH_TOKEN, base_path, repo
-from diffusers import StableDiffusionPipeline, DDIMScheduler, DiffusionPipeline, DPMSolverMultistepScheduler
+from config import HF_AUTH_TOKEN, base_path, repo, get_model_url, get_filename, get_model_path, all_model_names
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 import shutil
 import tarfile
 from logging import getLogger
@@ -31,7 +31,7 @@ def copy_files(src, dst):
                 shutil.copy(full_src_file_path, full_dst_file_path)
 
 
-def download_model():
+def download_model(model_name):
     # Download model
     logger.warning(f"Downloading model from {repo}")
     scheduler_for_initial_download = DPMSolverMultistepScheduler.from_pretrained(repo, subfolder="scheduler")
@@ -42,14 +42,18 @@ def download_model():
     logger.warning(f"Creating model folder {base_path}")
     model_for_initial_download.save_pretrained(base_path)
     # Download pretrained model
+    model_url = get_model_url(model_name)
+    filename = get_filename(model_url)
     logger.warning(f"Downloading pretrained model from {model_url}")
     urllib.request.urlretrieve(model_url, filename)
     logger.warning(f"Unzipping model {filename}")
     untar(filename)
 
+    model_path = get_model_path(filename)
     logger.warning(f"Copying files from {model_path} to {base_path}")
     copy_files(model_path, base_path)
 
 
 if __name__ == "__main__":
-    download_model()
+    for model_name in all_model_names:
+        download_model(model_name)
