@@ -13,7 +13,7 @@ logger = getLogger(__name__)
 def init():
     global models
     global upscaler
-
+    models = {}
     upscaler = StableDiffusionLatentUpscalePipeline.from_pretrained("stabilityai/sd-x2-latent-upscaler",
                                                                     torch_dtype=torch.float16)
     upscaler.to("cuda")
